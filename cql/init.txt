@@ -1,0 +1,13 @@
+-- Create Keyspace
+CREATE KEYSPACE IF NOT EXISTS your_keyspace
+WITH replication = {
+  'class': 'SimpleStrategy',
+  'replication_factor': 1
+};
+
+-- Create Table
+CREATE TABLE IF NOT EXISTS your_keyspace.person (
+  id UUID PRIMARY KEY,
+  name TEXT,
+  age INT
+);

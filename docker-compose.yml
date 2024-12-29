@@ -1,0 +1,50 @@
+version: "3"
+
+services:
+
+  scylla-node1:
+    container_name: scylla-node1
+    image: scylladb/scylla:5.2.0
+    restart: always
+    command: --seeds=scylla-node1,scylla-node2 --smp 4 --memory 1GB --overprovisioned 1 --api-address 0.0.0.0
+    volumes:
+      - "./scylla/scylla.yaml:/etc/scylla/scylla.yaml"
+      - "./scylla/cassandra-rackdc.properties.dc1:/etc/scylla/cassandra-rackdc.properties"
+      - "./scylla/mutant-data.txt:/mutant-data.txt"
+    ports:
+      - "9042:9042" # CQL port for queries
+      - "9180:9180" # REST API for ScyllaDB
+    networks:
+      web:
+
+  scylla-node2:
+    container_name: scylla-node2
+    image: scylladb/scylla:5.2.0
+    restart: always
+    command: --seeds=scylla-node1,scylla-node2 --smp 4 --memory 1GB --overprovisioned 1 --api-address 0.0.0.0
+    volumes:
+      - "./scylla/scylla.yaml:/etc/scylla/scylla.yaml"
+      - "./scylla/cassandra-rackdc.properties.dc1:/etc/scylla/cassandra-rackdc.properties"
+    ports:
+      - "9043:9042" # Different host port for this node
+      - "9181:9180" # REST API for this node
+    networks:
+      web:
+
+  scylla-node3:
+    container_name: scylla-node3
+    image: scylladb/scylla:5.2.0
+    restart: always
+    command: --seeds=scylla-node1,scylla-node2 --smp 4 --memory 1GB --overprovisioned 1 --api-address 0.0.0.0
+    volumes:
+      - "./scylla/scylla.yaml:/etc/scylla/scylla.yaml"
+      - "./scylla/cassandra-rackdc.properties.dc1:/etc/scylla/cassandra-rackdc.properties"
+    ports:
+      - "9044:9042" # Different host port for this node
+      - "9182:9180" # REST API for this node
+    networks:
+      web:
+
+networks:
+  web:
+    driver: bridge
